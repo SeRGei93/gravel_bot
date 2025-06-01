@@ -1,0 +1,40 @@
+# Go build files
+/bin/
+/build/
+/dist/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Dependency directories
+/vendor/
+go.sum
+
+# Editor/IDE configs
+.vscode/
+.idea/
+*.swp
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# SQLite database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs
+*.log
+
+# Configs
+config/config.yaml
+.env
+*config.yaml
+
+# Cache
+*.cache

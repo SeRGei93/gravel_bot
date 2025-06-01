@@ -1,0 +1,18 @@
+package table
+
+import (
+	"time"
+)
+
+// Gift — подарок участнику на событии
+type Gift struct {
+	ID        uint `gorm:"primaryKey;autoIncrement"`
+	UserID    int64
+	EventID   uint
+	Content   string
+	CreatedAt time.Time
+	UpdatedAt time.Time
+
+	User  User  `gorm:"foreignKey:UserID"`
+	Event Event `gorm:"foreignKey:EventID"`
+}
