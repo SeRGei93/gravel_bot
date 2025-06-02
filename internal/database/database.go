@@ -1,6 +1,7 @@
 package database
 
 import (
+	"fmt"
 	Repository "gravel_bot/internal/database/repository"
 
 	"gorm.io/gorm"
@@ -15,7 +16,7 @@ type Database struct {
 func InitDatabase(dialector gorm.Dialector) Database {
 	db, err := gorm.Open(dialector, &gorm.Config{})
 	if err != nil {
-		panic("failed to connect database")
+		panic(fmt.Sprintf("failed to connect database: %v", err))
 	}
 
 	return Database{

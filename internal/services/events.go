@@ -1,10 +1,13 @@
 package services
 
 import (
+	"fmt"
 	"gravel_bot/internal/config"
 	"gravel_bot/internal/database"
 	"gravel_bot/internal/database/table"
 	"log/slog"
+	"os"
+	"time"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
@@ -112,8 +115,8 @@ func SetBike(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Database,
 
 	msg.ReplyMarkup = tgbotapi.NewInlineKeyboardMarkup(
 		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonData("Гравийник", "type=mtb"),
-			tgbotapi.NewInlineKeyboardButtonData("МТБ", "type=gravel"),
+			tgbotapi.NewInlineKeyboardButtonData("Гравийник", "type=gravel"),
+			tgbotapi.NewInlineKeyboardButtonData("МТБ", "type=mtb"),
 			tgbotapi.NewInlineKeyboardButtonData("Фикс", "type=fixedgear"),
 			tgbotapi.NewInlineKeyboardButtonData("Шоссейник", "type=gay"),
 		),
@@ -179,6 +182,16 @@ func Kamni200(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Database
 		msg.ReplyMarkup = buttons
 	}
 	if _, err := bot.Send(msg); err != nil {
+		slog.Error(err.Error())
+	}
+
+	notification := tgbotapi.NewMessage(cfg.AdminChat, fmt.Sprintf("📥 Новый участник: %s (@%s) \nТип: %s",
+		from.FirstName+" "+from.LastName,
+		from.UserName,
+		bike,
+	))
+
+	if _, err := bot.Send(notification); err != nil {
 		slog.Error(err.Error())
 	}
 }
@@ -258,4 +271,49 @@ func addButtons(message *tgbotapi.Message, eventName string, db database.Databas
 	)
 
 	return &result, nil
+}
+
+func ExportCsv(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Database, cfg config.Bot) {
+	// Найти событие
+	event, err := db.Event.FindEventByName("kamni200")
+	if err != nil {
+		slog.Error("ошибка поиска события: " + err.Error())
+		return
+	}
+
+	// Сформировать путь к временном файлу
+	tmpFilePath := fmt.Sprintf("kamni200_%d_%d.csv", event.ID, time.Now().Unix())
+	defer os.Remove(tmpFilePath)
+
+	// Сгенерировать CSV
+	err = db.UserEvent.ExportEventParticipantsCSV(event.ID, tmpFilePath)
+	if err != nil {
+		slog.Error("ошибка при экспорте CSV: " + err.Error())
+		msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Ошибка при экспорте CSV")
+		bot.Send(msg)
+		return
+	}
+
+	// Открыть файл
+	file, err := os.Open(tmpFilePath)
+	if err != nil {
+		slog.Error("ошибка открытия файла: " + err.Error())
+		return
+	}
+	defer file.Close()
+
+	// Отправить файл как документ в чат админов
+	fileReader := tgbotapi.FileReader{
+		Name:   tmpFilePath,
+		Reader: file,
+	}
+	doc := tgbotapi.NewDocument(cfg.AdminChat, fileReader)
+	doc.Caption = "Список сосисок"
+
+	if _, err := bot.Send(doc); err != nil {
+		slog.Error("ошибка отправки файла: " + err.Error())
+		msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Не удалось отправить файл")
+		bot.Send(msg)
+		return
+	}
 }

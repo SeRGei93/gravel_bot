@@ -11,6 +11,21 @@ func InitBot(cfg config.Bot) *tgbotapi.BotAPI {
 	if err != nil {
 		panic(err)
 	}
+	SetLocalCommands(bot, cfg.AdminChat)
 	bot.Debug = true
 	return bot
+}
+
+func SetLocalCommands(bot *tgbotapi.BotAPI, chatID int64) error {
+	commands := []tgbotapi.BotCommand{
+		{Command: "export", Description: "Список участников"},
+		{Command: "export_csv", Description: "Список участников в файл"},
+	}
+
+	scope := tgbotapi.NewBotCommandScopeChat(chatID)
+
+	cfg := tgbotapi.NewSetMyCommandsWithScopeAndLanguage(scope, "ru", commands...)
+
+	_, err := bot.Request(cfg)
+	return err
 }

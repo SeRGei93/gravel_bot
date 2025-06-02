@@ -1,9 +1,12 @@
 package repository
 
 import (
+	"encoding/csv"
 	"errors"
 	"fmt"
 	"gravel_bot/internal/database/table"
+	"os"
+	"time"
 
 	"gorm.io/gorm"
 )
@@ -59,4 +62,51 @@ func (r *UserEventRepository) FindUserToEvent(userID int64, eventID uint) (*tabl
 	}
 
 	return &existing, nil
+}
+
+// ExportEventParticipantsCSV выгружает участников события в CSV-файл
+func (r *UserEventRepository) ExportEventParticipantsCSV(eventID uint, outputPath string) error {
+	type row struct {
+		NickName  string
+		FirstName string
+		LastName  string
+		CreatedAt time.Time
+		Bike      string
+		Result    string
+	}
+
+	var results []row
+
+	err := r.database.Table("user_events").
+		Select("users.nick_name, users.first_name, users.last_name, user_events.created_at, user_events.bike, user_events.result_link").
+		Joins("JOIN users ON users.id = user_events.user_id").
+		Where("user_events.event_id = ?", eventID).
+		Scan(&results).Error
+	if err != nil {
+		return fmt.Errorf("ошибка запроса: %w", err)
+	}
+
+	file, err := os.Create(outputPath)
+	if err != nil {
+		return fmt.Errorf("ошибка создания файла: %w", err)
+	}
+	defer file.Close()
+
+	writer := csv.NewWriter(file)
+	defer writer.Flush()
+
+	writer.Write([]string{"username", "first_name", "last_name", "registered_at", "bike_type", "result"})
+
+	for _, row := range results {
+		writer.Write([]string{
+			row.NickName,
+			row.FirstName,
+			row.LastName,
+			row.CreatedAt.Format("02.01.2006 15:04:05"),
+			row.Bike,
+			row.Result,
+		})
+	}
+
+	return nil
 }
