@@ -15,9 +15,11 @@ type Config struct {
 }
 
 type Bot struct {
-	TelegramToken string `yaml:"token"`
-	UseWebhook    bool   `yaml:"use_webhook"`
-	WebhookURL    string `yaml:"webhook_url"`
+	TelegramToken string  `yaml:"token"`
+	UseWebhook    bool    `yaml:"use_webhook"`
+	WebhookURL    string  `yaml:"webhook_url"`
+	AdminUsers    []int64 `yaml:"admin_users"`
+	AdminChat     int64   `yaml:"admin_chat"`
 }
 
 var (

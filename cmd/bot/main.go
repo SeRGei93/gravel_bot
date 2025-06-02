@@ -25,7 +25,7 @@ func main() {
 	db := database.InitDatabase(sqlite.Open(cfg.StoragePath))
 
 	bot := clients.InitBot(cfg.Bot)
-	handlers.Init(bot, db)
+	handlers.Init(bot, db, cfg.Bot)
 }
 
 func setupLogger(env string) *slog.Logger {
