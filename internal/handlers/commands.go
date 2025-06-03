@@ -14,5 +14,7 @@ func Commands(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Database
 		services.Start(bot, update, db, cfg)
 	case "export_csv":
 		services.ExportCsv(bot, update, db, cfg)
+	case "send_notify":
+		services.SendNotify(bot, update, db, cfg)
 	}
 }

@@ -16,6 +16,8 @@ func Init(bot *tgbotapi.BotAPI, db database.Database, cfg config.Bot) {
 			Callbacks(bot, update, db, cfg)
 		} else if update.Message != nil && update.Message.IsCommand() {
 			Commands(bot, update, db, cfg)
+		} else {
+			Messages(bot, update, db, cfg)
 		}
 	}
 }

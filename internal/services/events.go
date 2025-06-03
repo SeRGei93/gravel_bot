@@ -2,6 +2,7 @@ package services
 
 import (
 	"fmt"
+	"gravel_bot/internal/clients"
 	"gravel_bot/internal/config"
 	"gravel_bot/internal/database"
 	"gravel_bot/internal/database/table"
@@ -252,7 +253,7 @@ func addButtons(message *tgbotapi.Message, eventName string, db database.Databas
 	userID := from.ID
 
 	var buttons []tgbotapi.InlineKeyboardButton
-	buttons = append(buttons, tgbotapi.NewInlineKeyboardButtonData("Условия участия", "rules"))
+	buttons = append(buttons, tgbotapi.NewInlineKeyboardButtonData("📋 Условия участия", "rules"))
 
 	event, err := db.Event.FindEventByName(eventName)
 	if err != nil {
@@ -261,13 +262,16 @@ func addButtons(message *tgbotapi.Message, eventName string, db database.Databas
 
 	application, _ := db.UserEvent.FindUserToEvent(userID, event.ID)
 	if application == nil {
-		buttons = append(buttons, tgbotapi.NewInlineKeyboardButtonData("Принять участие", "kamni200"))
+		buttons = append(buttons, tgbotapi.NewInlineKeyboardButtonData("✅ Принять участие", "kamni200"))
 	} else {
-		buttons = append(buttons, tgbotapi.NewInlineKeyboardButtonData("Отменить участие", "kamni200_off"))
+		buttons = append(buttons, tgbotapi.NewInlineKeyboardButtonData("❌ Отказаться от участия", "kamni200_off"))
 	}
 
 	result := tgbotapi.NewInlineKeyboardMarkup(
 		tgbotapi.NewInlineKeyboardRow(buttons...),
+		tgbotapi.NewInlineKeyboardRow(
+			tgbotapi.NewInlineKeyboardButtonData("🎁 Добавить приз", "add_gift"),
+		),
 	)
 
 	return &result, nil
@@ -315,5 +319,37 @@ func ExportCsv(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Databas
 		msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Не удалось отправить файл")
 		bot.Send(msg)
 		return
+	}
+}
+
+func SendNotify(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Database, cfg config.Bot) {
+	msg := tgbotapi.NewMessage(update.Message.Chat.ID, "команда в разработке")
+	if _, err := bot.Send(msg); err != nil {
+		slog.Error(err.Error())
+	}
+}
+
+func AddGift(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Database, cfg config.Bot) {
+	// пометить пользователя как ожидающего ввода
+	clients.AwaitingMessage[update.CallbackQuery.From.ID] = true
+
+	msg := tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, "✏️ Введите ваше сообщение, я передам его администраторам")
+	bot.Send(msg)
+}
+
+func ResendMessage(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Database, cfg config.Bot) {
+	if update.Message != nil && update.Message.Chat.IsPrivate() {
+		userID := update.Message.From.ID
+
+		if clients.AwaitingMessage[userID] {
+			// переслать сообщение
+			fwd := tgbotapi.NewForward(cfg.AdminChat, update.Message.Chat.ID, update.Message.MessageID)
+			bot.Send(fwd)
+
+			delete(clients.AwaitingMessage, userID) // очистить
+			bot.Send(tgbotapi.NewMessage(update.Message.Chat.ID, "✅ Спасибо, Ваше сообщение отправлено."))
+		} else {
+			bot.Send(tgbotapi.NewMessage(update.Message.Chat.ID, "❗ Чтобы добавить еще один приз, нажмите кнопку «Добавить приз»."))
+		}
 	}
 }
