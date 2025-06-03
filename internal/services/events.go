@@ -134,7 +134,7 @@ func Kamni200(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Database
 
 	// Создание или обновление пользователя
 	_ = db.User.CreateUser(table.User{
-		Id:        userID,
+		ID:        userID,
 		NickName:  from.UserName,
 		FirstName: from.FirstName,
 		LastName:  from.LastName,
@@ -312,7 +312,7 @@ func ExportCsv(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Databas
 		Reader: file,
 	}
 	doc := tgbotapi.NewDocument(cfg.AdminChat, fileReader)
-	doc.Caption = "Список сосисок"
+	doc.Caption = "Список писок"
 
 	if _, err := bot.Send(doc); err != nil {
 		slog.Error("ошибка отправки файла: " + err.Error())
@@ -335,52 +335,4 @@ func AddGift(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Database,
 
 	msg := tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, "✏️ Укажите номинацию и опишите приз, можно прикрепить фото. Обязательно уложиться в одно сообщение")
 	bot.Send(msg)
-}
-
-func SaveGift(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Database, cfg config.Bot) {
-	if update.Message != nil && update.Message.Chat.IsPrivate() {
-		userID := update.Message.From.ID
-
-		if clients.AwaitingMessage[userID] {
-			// переслать сообщение в админский чат
-			fwd := tgbotapi.NewForward(cfg.AdminChat, update.Message.Chat.ID, update.Message.MessageID)
-			bot.Send(fwd)
-
-			event, err := db.Event.FindEventByName("kamni200")
-			if err != nil {
-				slog.Error("ошибка поиска события: " + err.Error())
-				return
-			}
-
-			// сохраняем подарок
-			gift := table.Gift{
-				UserID:    userID,
-				EventID:   event.ID,
-				Content:   update.Message.Text,
-				CreatedAt: time.Now(),
-				UpdatedAt: time.Now(),
-			}
-			if err := db.Gift.CreateGift(gift); err != nil {
-				slog.Error(err.Error())
-			}
-			// сохраняем фотки
-			if update.Message.Photo != nil && len(update.Message.Photo) > 0 {
-				for _, p := range update.Message.Photo {
-					file := table.File{
-						Id:       p.FileID,
-						Type:     "photo",
-						EntityId: gift.ID,
-					}
-					if err := db.File.CreateFile(file); err != nil {
-						slog.Error(err.Error())
-					}
-				}
-			}
-
-			delete(clients.AwaitingMessage, userID) // очистить
-			bot.Send(tgbotapi.NewMessage(update.Message.Chat.ID, "✅ Спасибо, Ваше сообщение отправлено."))
-		} else {
-			bot.Send(tgbotapi.NewMessage(update.Message.Chat.ID, "❗ Чтобы добавить еще один приз, нажмите кнопку «Добавить приз»."))
-		}
-	}
 }

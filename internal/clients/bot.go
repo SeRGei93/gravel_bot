@@ -22,6 +22,7 @@ func SetLocalCommands(bot *tgbotapi.BotAPI, chatID int64) error {
 	commands := []tgbotapi.BotCommand{
 		//{Command: "export", Description: "Список участников"},
 		{Command: "export_csv", Description: "Список участников"},
+		{Command: "export_gifts", Description: "Список подарков"},
 		{Command: "send_notify", Description: "Отправить сообщение всем участникам"},
 	}
 

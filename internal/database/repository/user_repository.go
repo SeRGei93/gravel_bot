@@ -32,7 +32,7 @@ func (r *UserRepository) UpdateUser(tu table.User) error {
 }
 
 func (r *UserRepository) FindUser(id int64) (table.User, error) {
-	tu := table.User{Id: id}
+	tu := table.User{ID: id}
 	err := r.database.Where(tu).Take(&tu).Error
 	if err != nil {
 		return tu, err
@@ -42,7 +42,7 @@ func (r *UserRepository) FindUser(id int64) (table.User, error) {
 }
 
 func (r *UserRepository) DeleteUser(id int64) error {
-	tu := table.User{Id: id}
+	tu := table.User{ID: id}
 	return r.database.Delete(tu).Error
 }
 
