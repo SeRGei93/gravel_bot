@@ -14,11 +14,9 @@ import (
 func SaveGift(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Database, cfg config.Bot) {
 	if update.Message != nil && update.Message.Chat.IsPrivate() {
 		userID := update.Message.From.ID
+		hasMediaGroup := false
 
 		if clients.AwaitingMessage[userID] {
-			// переслать сообщение в админский чат
-			//fwd := tgbotapi.NewForward(cfg.AdminChat, update.Message.Chat.ID, update.Message.MessageID)
-			//bot.Send(fwd)
 
 			event, err := db.Event.FindEventByName("kamni200")
 			if err != nil {
@@ -36,6 +34,7 @@ func SaveGift(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Database
 			}
 
 			if update.Message.MediaGroupID != "" && len(files) > 0 {
+				hasMediaGroup = true
 				existGift, err := db.Gift.FindGiftByMediaGroup(update.Message.MediaGroupID)
 				if err == nil {
 					photo := files[0]
@@ -48,9 +47,15 @@ func SaveGift(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Database
 					if err := db.File.CreateFile(file); err != nil {
 						slog.Error(err.Error())
 					}
+
+					delete(clients.AwaitingMessage, userID)
 					return
 				}
 			}
+
+			// переслать сообщение в админский чат
+			fwd := tgbotapi.NewForward(cfg.AdminChat, update.Message.Chat.ID, update.Message.MessageID)
+			bot.Send(fwd)
 
 			text := update.Message.Text
 			if len(files) > 0 {
@@ -80,7 +85,10 @@ func SaveGift(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Database
 				slog.Error(err.Error())
 			}
 
-			delete(clients.AwaitingMessage, userID) // очистить
+			if !hasMediaGroup {
+				delete(clients.AwaitingMessage, userID) // очистить
+			}
+
 			bot.Send(tgbotapi.NewMessage(update.Message.Chat.ID, "✅ Спасибо, Ваше сообщение отправлено."))
 		} else {
 			bot.Send(tgbotapi.NewMessage(update.Message.Chat.ID, "❗ Чтобы добавить еще один приз, нажмите кнопку «Добавить приз»."))
