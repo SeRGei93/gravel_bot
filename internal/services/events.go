@@ -323,8 +323,6 @@ func ExportCsv(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Databas
 }
 
 func SendNotify(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Database, cfg config.Bot) {
-	users = db.User.GetAllUsers()
-
 	msg := tgbotapi.NewMessage(update.Message.Chat.ID, "команда в разработке")
 	if _, err := bot.Send(msg); err != nil {
 		slog.Error(err.Error())
@@ -335,6 +333,6 @@ func AddGift(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Database,
 	// пометить пользователя как ожидающего ввода
 	clients.AwaitingMessage[update.CallbackQuery.From.ID] = true
 
-	msg := tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, "✏️ Укажите номинацию и опишите приз, можно прикрепить фото (❗ максимум 2 штуки). Обязательно уложиться в одно сообщение")
+	msg := tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, "✏️ Укажите номинацию и опишите приз, можно прикрепить фото (❗максимум 2 штуки). Обязательно уложиться в одно сообщение")
 	bot.Send(msg)
 }
