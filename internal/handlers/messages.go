@@ -9,5 +9,5 @@ import (
 )
 
 func Messages(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Database, cfg config.Bot) {
-	services.ResendMessage(bot, update, db, cfg)
+	services.SaveGift(bot, update, db, cfg)
 }

@@ -333,18 +333,49 @@ func AddGift(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Database,
 	// пометить пользователя как ожидающего ввода
 	clients.AwaitingMessage[update.CallbackQuery.From.ID] = true
 
-	msg := tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, "✏️ Введите ваше сообщение, я передам его администраторам")
+	msg := tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, "✏️ Укажите номинацию и опишите приз, можно прикрепить фото. Обязательно уложиться в одно сообщение")
 	bot.Send(msg)
 }
 
-func ResendMessage(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Database, cfg config.Bot) {
+func SaveGift(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Database, cfg config.Bot) {
 	if update.Message != nil && update.Message.Chat.IsPrivate() {
 		userID := update.Message.From.ID
 
 		if clients.AwaitingMessage[userID] {
-			// переслать сообщение
+			// переслать сообщение в админский чат
 			fwd := tgbotapi.NewForward(cfg.AdminChat, update.Message.Chat.ID, update.Message.MessageID)
 			bot.Send(fwd)
+
+			event, err := db.Event.FindEventByName("kamni200")
+			if err != nil {
+				slog.Error("ошибка поиска события: " + err.Error())
+				return
+			}
+
+			// сохраняем подарок
+			gift := table.Gift{
+				UserID:    userID,
+				EventID:   event.ID,
+				Content:   update.Message.Text,
+				CreatedAt: time.Now(),
+				UpdatedAt: time.Now(),
+			}
+			if err := db.Gift.CreateGift(gift); err != nil {
+				slog.Error(err.Error())
+			}
+			// сохраняем фотки
+			if update.Message.Photo != nil && len(update.Message.Photo) > 0 {
+				for _, p := range update.Message.Photo {
+					file := table.File{
+						Id:       p.FileID,
+						Type:     "photo",
+						EntityId: gift.ID,
+					}
+					if err := db.File.CreateFile(file); err != nil {
+						slog.Error(err.Error())
+					}
+				}
+			}
 
 			delete(clients.AwaitingMessage, userID) // очистить
 			bot.Send(tgbotapi.NewMessage(update.Message.Chat.ID, "✅ Спасибо, Ваше сообщение отправлено."))

@@ -9,10 +9,7 @@ type Gift struct {
 	ID        uint `gorm:"primaryKey;autoIncrement"`
 	UserID    int64
 	EventID   uint
-	Content   string
+	Content   string `gorm:"type:text"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
-
-	User  User  `gorm:"foreignKey:UserID"`
-	Event Event `gorm:"foreignKey:EventID"`
 }

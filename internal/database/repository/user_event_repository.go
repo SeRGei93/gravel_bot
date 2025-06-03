@@ -72,16 +72,27 @@ func (r *UserEventRepository) ExportEventParticipantsCSV(eventID uint, outputPat
 		LastName  string
 		CreatedAt time.Time
 		Bike      string
+		Gift      string
 		Result    string
 	}
 
 	var results []row
 
-	err := r.database.Table("user_events").
-		Select("users.nick_name, users.first_name, users.last_name, user_events.created_at, user_events.bike, user_events.result_link").
-		Joins("JOIN users ON users.id = user_events.user_id").
-		Where("user_events.event_id = ?", eventID).
-		Scan(&results).Error
+	err := r.database.Raw(`
+		SELECT 
+			u.nick_name,
+			u.first_name,
+			u.last_name,
+			ue.created_at,
+			ue.bike,
+			ue.result_link AS result,
+			CASE WHEN g.id IS NOT NULL THEN 'Y' ELSE '' END AS gift
+		FROM user_events ue
+		JOIN users u ON u.id = ue.user_id
+		LEFT JOIN gifts g ON g.user_id = ue.user_id AND g.event_id = ue.event_id
+		WHERE ue.event_id = ?
+		GROUP BY ue.user_id
+	`, eventID).Scan(&results).Error
 	if err != nil {
 		return fmt.Errorf("ошибка запроса: %w", err)
 	}
@@ -95,7 +106,7 @@ func (r *UserEventRepository) ExportEventParticipantsCSV(eventID uint, outputPat
 	writer := csv.NewWriter(file)
 	defer writer.Flush()
 
-	writer.Write([]string{"username", "first_name", "last_name", "registered_at", "bike_type", "result"})
+	writer.Write([]string{"username", "first_name", "last_name", "registered_at", "bike_type", "gift", "result"})
 
 	for _, row := range results {
 		writer.Write([]string{
@@ -104,6 +115,7 @@ func (r *UserEventRepository) ExportEventParticipantsCSV(eventID uint, outputPat
 			row.LastName,
 			row.CreatedAt.Format("02.01.2006 15:04:05"),
 			row.Bike,
+			row.Gift,
 			row.Result,
 		})
 	}
