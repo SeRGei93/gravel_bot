@@ -89,7 +89,13 @@ func SaveGift(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Database
 				delete(clients.AwaitingMessage, userID) // очистить
 			}
 
-			bot.Send(tgbotapi.NewMessage(update.Message.Chat.ID, "✅ Спасибо, Ваше сообщение отправлено."))
+			msg := tgbotapi.NewMessage(update.Message.Chat.ID, "✅ Спасибо, Ваше сообщение отправлено.")
+			buttons, err := addButtons(update.CallbackQuery.Message, "kamni200", db, cfg)
+			if err == nil {
+				msg.ReplyMarkup = buttons
+			}
+
+			bot.Send(msg)
 		} else {
 			bot.Send(tgbotapi.NewMessage(update.Message.Chat.ID, "❗ Чтобы добавить еще один приз, нажмите кнопку «Добавить приз»."))
 		}
