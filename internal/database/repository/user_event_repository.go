@@ -67,6 +67,7 @@ func (r *UserEventRepository) FindUserToEvent(userID int64, eventID uint) (*tabl
 // ExportEventParticipantsCSV выгружает участников события в CSV-файл
 func (r *UserEventRepository) ExportEventParticipantsCSV(eventID uint, outputPath string) error {
 	type row struct {
+		ID        string
 		NickName  string
 		FirstName string
 		LastName  string
@@ -80,6 +81,7 @@ func (r *UserEventRepository) ExportEventParticipantsCSV(eventID uint, outputPat
 
 	err := r.database.Raw(`
 		SELECT 
+			u.id,
 			u.nick_name,
 			u.first_name,
 			u.last_name,
@@ -107,11 +109,12 @@ func (r *UserEventRepository) ExportEventParticipantsCSV(eventID uint, outputPat
 	writer := csv.NewWriter(file)
 	defer writer.Flush()
 
-	writer.Write([]string{"username", "first_name", "last_name", "registered_at", "bike_type", "gift", "result"})
+	writer.Write([]string{"tg_id", "username", "first_name", "last_name", "registered_at", "bike_type", "gift", "result"})
 
 	for _, row := range results {
 		writer.Write([]string{
-			row.NickName,
+			row.ID,
+			"@" + row.NickName,
 			row.FirstName,
 			row.LastName,
 			row.CreatedAt.Format("02.01.2006 15:04:05"),
