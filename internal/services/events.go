@@ -176,7 +176,7 @@ func Kamni200(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Database
 	}
 
 	// Успешное сообщение
-	text := "Заявка принята"
+	text := "Спасибо. Ваша заявка принята 🔥"
 	msg := tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, text)
 	buttons, err := addButtons(update.CallbackQuery.Message, "kamni200", db, cfg)
 	if err == nil {
@@ -186,7 +186,7 @@ func Kamni200(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Database
 		slog.Error(err.Error())
 	}
 
-	notification := tgbotapi.NewMessage(cfg.AdminChat, fmt.Sprintf("📥 Новый участник: %s (@%s) \nТип: %s",
+	notification := tgbotapi.NewMessage(cfg.AdminChat, fmt.Sprintf("🚴 Новый участник: %s (@%s) \nТип: %s",
 		from.FirstName+" "+from.LastName,
 		from.UserName,
 		bike,
@@ -253,24 +253,28 @@ func addButtons(message *tgbotapi.Message, eventName string, db database.Databas
 	userID := from.ID
 
 	var buttons []tgbotapi.InlineKeyboardButton
-	buttons = append(buttons, tgbotapi.NewInlineKeyboardButtonData("📋 Условия участия", "rules"))
+	buttons = append(buttons, tgbotapi.NewInlineKeyboardButtonData("‼️ Условия участия", "rules"))
+	buttons = append(buttons, tgbotapi.NewInlineKeyboardButtonURL("🚴‍♀️ Чат участников", "http://t.me/kamnigravel"))
 
 	event, err := db.Event.FindEventByName(eventName)
 	if err != nil {
 		return nil, err
 	}
 
+	var buttons2 []tgbotapi.InlineKeyboardButton
 	application, _ := db.UserEvent.FindUserToEvent(userID, event.ID)
 	if application == nil {
-		buttons = append(buttons, tgbotapi.NewInlineKeyboardButtonData("✅ Принять участие", "kamni200"))
+		buttons2 = append(buttons2, tgbotapi.NewInlineKeyboardButtonData("✅ Принять участие", "kamni200"))
 	} else {
-		buttons = append(buttons, tgbotapi.NewInlineKeyboardButtonData("❌ Отказаться от участия", "kamni200_off"))
+		buttons2 = append(buttons2, tgbotapi.NewInlineKeyboardButtonData("😢 Отказаться от участия", "kamni200_off"))
 	}
 
 	result := tgbotapi.NewInlineKeyboardMarkup(
+		tgbotapi.NewInlineKeyboardRow(buttons2...),
 		tgbotapi.NewInlineKeyboardRow(buttons...),
 		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonData("🎁 Добавить приз", "add_gift"),
+			tgbotapi.NewInlineKeyboardButtonURL("🏆 Призовой фонд", "https://t.me/kamnigravel/7698"),
+			tgbotapi.NewInlineKeyboardButtonData("➕🎁 Добавить приз", "add_gift"),
 		),
 	)
 
@@ -333,6 +337,18 @@ func AddGift(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Database,
 	// пометить пользователя как ожидающего ввода
 	clients.AwaitingMessage[update.CallbackQuery.From.ID] = true
 
-	msg := tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, "✏️ Укажите номинацию и опишите приз, можно прикрепить фото (❗максимум 2 штуки). Обязательно уложиться в одно сообщение")
+	msg := tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, `
+	✏️ Укажите номинацию и опишите приз.
+
+	Например:
+	Первое место Топ кэп "спаси и сохрани"
+	Книга цитат Стэтхэма за 8 место в абсолютном зачете
+	За самый высокий средний пульс на дистанции упаковка мельдония
+	Человек с самой лысой резиной получит блин шу пуэра
+
+	❗Обязательно уложиться в одно сообщение
+	❗Максимум 2 фото
+	`)
+	msg.ParseMode = "HTML"
 	bot.Send(msg)
 }

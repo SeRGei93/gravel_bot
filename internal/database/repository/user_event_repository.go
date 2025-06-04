@@ -92,6 +92,7 @@ func (r *UserEventRepository) ExportEventParticipantsCSV(eventID uint, outputPat
 		LEFT JOIN gifts g ON g.user_id = ue.user_id AND g.event_id = ue.event_id
 		WHERE ue.event_id = ?
 		GROUP BY ue.user_id
+		ORDER BY ue.created_at
 	`, eventID).Scan(&results).Error
 	if err != nil {
 		return fmt.Errorf("ошибка запроса: %w", err)

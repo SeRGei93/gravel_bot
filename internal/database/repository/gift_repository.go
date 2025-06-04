@@ -13,6 +13,7 @@ type GiftRepository struct {
 }
 
 type GiftDto struct {
+	ID        int64
 	NickName  string
 	FirstName string
 	LastName  string
@@ -43,7 +44,7 @@ func (r *GiftRepository) FindGiftByMediaGroup(id string) (table.Gift, error) {
 
 func (r *GiftRepository) FindGiftsByEvent(id uint) ([]table.Gift, error) {
 	var rows []table.Gift
-	err := r.database.Where("event_id = ?", id).Preload("User").Preload("Files").Find(&rows).Error
+	err := r.database.Where("event_id = ?", id).Preload("User").Preload("Files").Order("created_at DESC").Find(&rows).Error
 	return rows, err
 }
 
@@ -59,6 +60,7 @@ func (r *GiftRepository) ExportGifts(eventID uint) ([]GiftDto, error) {
 	for _, gift := range gifts {
 
 		dto := GiftDto{
+			ID:        gift.User.ID,
 			NickName:  gift.User.NickName,
 			FirstName: gift.User.FirstName,
 			LastName:  gift.User.LastName,

@@ -76,7 +76,7 @@ func makeFile(bot *tgbotapi.BotAPI, rows []repository.GiftDto, tmpFilePath strin
 	writer := csv.NewWriter(file)
 	defer writer.Flush()
 
-	writer.Write([]string{"username", "first_name", "last_name", "gift", "images", "date"})
+	writer.Write([]string{"tg_id", "username", "first_name", "last_name", "gift", "images", "date"})
 
 	for _, row := range rows {
 		files := ""
@@ -89,7 +89,8 @@ func makeFile(bot *tgbotapi.BotAPI, rows []repository.GiftDto, tmpFilePath strin
 		}
 
 		writer.Write([]string{
-			row.NickName,
+			fmt.Sprintf("%d", row.ID),
+			"@" + row.NickName,
 			row.FirstName,
 			row.LastName,
 			row.Content,
