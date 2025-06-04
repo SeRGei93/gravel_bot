@@ -1,6 +1,7 @@
 package services
 
 import (
+	"fmt"
 	"gravel_bot/internal/config"
 	"gravel_bot/internal/database"
 	"gravel_bot/internal/database/table"
@@ -52,10 +53,10 @@ func SaveGift(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Database
 			}
 
 			// переслать сообщение в админский чат
-			//notice := tgbotapi.NewMessage(cfg.AdminChat, fmt.Sprintf("@%s добавил 🎁", update.Message.From.UserName))
-			//bot.Send(notice)
-			//fwd := tgbotapi.NewForward(cfg.AdminChat, update.Message.Chat.ID, update.Message.MessageID)
-			//bot.Send(fwd)
+			notice := tgbotapi.NewMessage(cfg.AdminChat, fmt.Sprintf("@%s добавил 🎁", update.Message.From.UserName))
+			bot.Send(notice)
+			fwd := tgbotapi.NewForward(cfg.AdminChat, update.Message.Chat.ID, update.Message.MessageID)
+			bot.Send(fwd)
 
 			text := update.Message.Text
 			if len(files) > 0 {
