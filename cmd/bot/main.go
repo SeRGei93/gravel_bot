@@ -5,8 +5,10 @@ import (
 	"gravel_bot/internal/config"
 	"gravel_bot/internal/database"
 	"gravel_bot/internal/handlers"
+	"gravel_bot/internal/utils"
 	"log/slog"
 	"os"
+	"time"
 
 	"gorm.io/driver/sqlite"
 )
@@ -26,6 +28,15 @@ func main() {
 
 	bot := clients.InitBot(cfg.Bot)
 	handlers.Init(bot, db, cfg.Bot)
+
+	// очистка очереди ожидания
+	go func() {
+		ticker := time.NewTicker(10 * time.Second)
+		defer ticker.Stop()
+		for range ticker.C {
+			utils.CleanupOldAwaiting()
+		}
+	}()
 }
 
 func setupLogger(env string) *slog.Logger {

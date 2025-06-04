@@ -1,10 +1,10 @@
 package services
 
 import (
-	"gravel_bot/internal/clients"
 	"gravel_bot/internal/config"
 	"gravel_bot/internal/database"
 	"gravel_bot/internal/database/table"
+	"gravel_bot/internal/utils"
 	"log/slog"
 	"time"
 
@@ -16,8 +16,8 @@ func SaveGift(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Database
 		userID := update.Message.From.ID
 		hasMediaGroup := false
 
-		if clients.AwaitingMessage[userID] {
-
+		if utils.IsAwaiting(userID) {
+			utils.SetAwaiting(userID, 3) // меняем время ожидания, мы уже дождались ответ
 			event, err := db.Event.FindEventByName("kamni200")
 			if err != nil {
 				slog.Error("ошибка поиска события: " + err.Error())
@@ -47,15 +47,15 @@ func SaveGift(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Database
 					if err := db.File.CreateFile(file); err != nil {
 						slog.Error(err.Error())
 					}
-
-					delete(clients.AwaitingMessage, userID)
 					return
 				}
 			}
 
 			// переслать сообщение в админский чат
-			fwd := tgbotapi.NewForward(cfg.AdminChat, update.Message.Chat.ID, update.Message.MessageID)
-			bot.Send(fwd)
+			//notice := tgbotapi.NewMessage(cfg.AdminChat, fmt.Sprintf("@%s добавил 🎁", update.Message.From.UserName))
+			//bot.Send(notice)
+			//fwd := tgbotapi.NewForward(cfg.AdminChat, update.Message.Chat.ID, update.Message.MessageID)
+			//bot.Send(fwd)
 
 			text := update.Message.Text
 			if len(files) > 0 {
@@ -86,11 +86,11 @@ func SaveGift(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Database
 			}
 
 			if !hasMediaGroup {
-				delete(clients.AwaitingMessage, userID) // очистить
+				utils.DeleteAwaiting(userID) // очистить
 			}
 
 			msg := tgbotapi.NewMessage(update.Message.Chat.ID, "✅ Спасибо, Ваше сообщение отправлено.")
-			buttons, err := addButtons(update.CallbackQuery.Message, "kamni200", db, cfg)
+			buttons, err := addButtons(update.Message, "kamni200", db, cfg)
 			if err == nil {
 				msg.ReplyMarkup = buttons
 			}

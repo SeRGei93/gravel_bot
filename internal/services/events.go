@@ -2,7 +2,6 @@ package services
 
 import (
 	"fmt"
-	"gravel_bot/internal/clients"
 	"gravel_bot/internal/config"
 	"gravel_bot/internal/database"
 	"gravel_bot/internal/database/table"
@@ -331,24 +330,4 @@ func SendNotify(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Databa
 	if _, err := bot.Send(msg); err != nil {
 		slog.Error(err.Error())
 	}
-}
-
-func AddGift(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Database, cfg config.Bot) {
-	// пометить пользователя как ожидающего ввода
-	clients.AwaitingMessage[update.CallbackQuery.From.ID] = true
-
-	msg := tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, `
-	✏️ Укажите номинацию и опишите приз.
-
-	Например:
-	Первое место Топ кэп "спаси и сохрани"
-	Книга цитат Стэтхэма за 8 место в абсолютном зачете
-	За самый высокий средний пульс на дистанции упаковка мельдония
-	Человек с самой лысой резиной получит блин шу пуэра
-
-	❗Обязательно уложиться в одно сообщение
-	❗Максимум 2 фото
-	`)
-	msg.ParseMode = "HTML"
-	bot.Send(msg)
 }
