@@ -254,27 +254,25 @@ func addButtons(message *tgbotapi.Message, eventName string, db database.Databas
 	var buttons []tgbotapi.InlineKeyboardButton
 	buttons = append(buttons, tgbotapi.NewInlineKeyboardButtonData("‼️ Условия участия", "rules"))
 	buttons = append(buttons, tgbotapi.NewInlineKeyboardButtonURL("🚴‍♀️ Чат участников", "http://t.me/kamnigravel"))
+	buttons = append(buttons, tgbotapi.NewInlineKeyboardButtonURL("🏆 Призовой фонд", "https://t.me/kamnigravel/7698"))
 
 	event, err := db.Event.FindEventByName(eventName)
 	if err != nil {
 		return nil, err
 	}
 
-	var buttons2 []tgbotapi.InlineKeyboardButton
+	var applicationBtn []tgbotapi.InlineKeyboardButton
 	application, _ := db.UserEvent.FindUserToEvent(userID, event.ID)
 	if application == nil {
-		buttons2 = append(buttons2, tgbotapi.NewInlineKeyboardButtonData("✅ Принять участие", "kamni200"))
+		applicationBtn = append(applicationBtn, tgbotapi.NewInlineKeyboardButtonData("✅ Принять участие", "kamni200"))
 	} else {
-		buttons2 = append(buttons2, tgbotapi.NewInlineKeyboardButtonData("😢 Отказаться от участия", "kamni200_off"))
+		applicationBtn = append(applicationBtn, tgbotapi.NewInlineKeyboardButtonData("😢 Отказаться от участия", "kamni200_off"))
 	}
 
 	result := tgbotapi.NewInlineKeyboardMarkup(
-		tgbotapi.NewInlineKeyboardRow(buttons2...),
+		tgbotapi.NewInlineKeyboardRow(applicationBtn...),
+		tgbotapi.NewInlineKeyboardRow(tgbotapi.NewInlineKeyboardButtonData("➕🎁 Добавить приз", "add_gift")),
 		tgbotapi.NewInlineKeyboardRow(buttons...),
-		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonURL("🏆 Призовой фонд", "https://t.me/kamnigravel/7698"),
-			tgbotapi.NewInlineKeyboardButtonData("➕🎁 Добавить приз", "add_gift"),
-		),
 	)
 
 	return &result, nil
