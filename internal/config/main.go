@@ -20,6 +20,7 @@ type Bot struct {
 	WebhookURL    string  `yaml:"webhook_url"`
 	AdminUsers    []int64 `yaml:"admin_users"`
 	AdminChat     int64   `yaml:"admin_chat"`
+	PublicChat    int64   `yaml:"public_chat"`
 }
 
 var (
