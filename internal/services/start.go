@@ -27,10 +27,6 @@ func Start(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Database, c
 
 	🗺 <b>МАРШРУТ:</b> <a href="https://ehai.club/kamni/Kamni200_2025_v1.gpx">GPX</a> | <a href="https://nakarte.me/#m=10/54.26482/27.30927&l=Y&nktl=JBZ7YVT6aBOO5xd2fESKEQ">Nakarte</a>
 	❗️До старта возможны изменения
-
-	‼️ <a href="https://t.me/kamnigravel/7697">УСЛОВИЯ УЧАСТИЯ</a>
-	🍓 <a href="https://t.me/kamnigravel/7698">ПРИЗОВОЙ ФОНД</a>
-	📣 <a href="http://t.me/kamnigravel">Чат для участников</a>
 	`
 
 	msg := tgbotapi.NewMessage(update.Message.Chat.ID, text)
