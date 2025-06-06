@@ -9,7 +9,7 @@ import (
 
 func Start(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Database, cfg config.Bot) {
 	if update.Message.Chat.ID == cfg.PublicChat {
-		msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Открыиа ")
+		msg := tgbotapi.NewMessage(update.Message.Chat.ID, "")
 		msg.ReplyMarkup = tgbotapi.NewInlineKeyboardMarkup(
 			tgbotapi.NewInlineKeyboardRow(tgbotapi.NewInlineKeyboardButtonURL("✅ Принять участие", "https://t.me/kamnigravelride_bot")),
 			tgbotapi.NewInlineKeyboardRow(tgbotapi.NewInlineKeyboardButtonURL("🏆 Призовой фонд", "https://t.me/kamnigravel/7698")),
