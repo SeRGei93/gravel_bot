@@ -9,14 +9,6 @@ import (
 
 func Start(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Database, cfg config.Bot) {
 	if update.Message.Chat.ID == cfg.PublicChat {
-		//msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Привет")
-		//msg.ReplyMarkup = tgbotapi.NewInlineKeyboardMarkup(
-		//	tgbotapi.NewInlineKeyboardRow(tgbotapi.NewInlineKeyboardButtonURL("✅ Принять участие", "https://t.me/kamnigravelride_bot")),
-		//	tgbotapi.NewInlineKeyboardRow(tgbotapi.NewInlineKeyboardButtonURL("🏆 Призовой фонд", "https://t.me/kamnigravel/7698")),
-		//	tgbotapi.NewInlineKeyboardRow(tgbotapi.NewInlineKeyboardButtonURL("‼️ Условия участия", "https://t.me/kamnigravel/7697")),
-		//)
-
-		//bot.Send(msg)
 		return
 	}
 
