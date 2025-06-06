@@ -29,7 +29,7 @@ func SetLocalCommands(bot *tgbotapi.BotAPI, cfg config.Bot) error {
 	}
 
 	publicCommands := []tgbotapi.BotCommand{
-		{Command: "info", Description: "Инфо"},
+		//{Command: "info", Description: "Инфо"},
 	}
 
 	err = sendCommandRequest(bot, cfg.PublicChat, publicCommands)
