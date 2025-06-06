@@ -11,23 +11,38 @@ func InitBot(cfg config.Bot) *tgbotapi.BotAPI {
 	if err != nil {
 		panic(err)
 	}
-	SetLocalCommands(bot, cfg.AdminChat)
+	SetLocalCommands(bot, cfg)
 	bot.Debug = true
 	return bot
 }
 
-func SetLocalCommands(bot *tgbotapi.BotAPI, chatID int64) error {
-	commands := []tgbotapi.BotCommand{
-		//{Command: "export", Description: "Список участников"},
+func SetLocalCommands(bot *tgbotapi.BotAPI, cfg config.Bot) error {
+	adminCommands := []tgbotapi.BotCommand{
 		{Command: "export_csv", Description: "Список участников"},
 		{Command: "export_gifts", Description: "Список подарков"},
 		{Command: "send_notify", Description: "Отправить сообщение всем участникам"},
 	}
 
-	scope := tgbotapi.NewBotCommandScopeChat(chatID)
+	err := sendCommandRequest(bot, cfg.AdminChat, adminCommands)
+	if err != nil {
+		return err
+	}
 
-	cfg := tgbotapi.NewSetMyCommandsWithScopeAndLanguage(scope, "ru", commands...)
+	publicCommands := []tgbotapi.BotCommand{
+		{Command: "info", Description: "Инфо"},
+	}
 
-	_, err := bot.Request(cfg)
+	err = sendCommandRequest(bot, cfg.PublicChat, publicCommands)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func sendCommandRequest(bot *tgbotapi.BotAPI, chatId int64, commands []tgbotapi.BotCommand) error {
+	scope := tgbotapi.NewBotCommandScopeChat(chatId)
+	cfgAdminChat := tgbotapi.NewSetMyCommandsWithScopeAndLanguage(scope, "ru", commands...)
+	_, err := bot.Request(cfgAdminChat)
 	return err
 }
