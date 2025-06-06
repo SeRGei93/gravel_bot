@@ -44,7 +44,7 @@ func (r *GiftRepository) FindGiftByMediaGroup(id string) (table.Gift, error) {
 
 func (r *GiftRepository) FindGiftsByEvent(id uint) ([]table.Gift, error) {
 	var rows []table.Gift
-	err := r.database.Where("event_id = ?", id).Preload("User").Preload("Files").Order("created_at DESC").Find(&rows).Error
+	err := r.database.Where("event_id = ?", id).Preload("User").Preload("Files").Order("created_at ASC").Find(&rows).Error
 	return rows, err
 }
 
