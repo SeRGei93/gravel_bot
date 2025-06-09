@@ -42,7 +42,6 @@ func SetLocalCommands(bot *tgbotapi.BotAPI, cfg config.Bot) error {
 
 func sendCommandRequest(bot *tgbotapi.BotAPI, chatId int64, commands []tgbotapi.BotCommand) error {
 	scope := tgbotapi.NewBotCommandScopeChat(chatId)
-	cfgAdminChat := tgbotapi.NewSetMyCommandsWithScopeAndLanguage(scope, "ru", commands...)
-	_, err := bot.Request(cfgAdminChat)
+	_, err := bot.Request(tgbotapi.NewSetMyCommandsWithScopeAndLanguage(scope, "ru", commands...))
 	return err
 }
