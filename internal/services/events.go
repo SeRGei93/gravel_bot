@@ -152,6 +152,7 @@ func Kamni200(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Database
 `
 	msg := tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, text)
 	buttons, err := addButtons(update.CallbackQuery.Message, "kamni200", db, cfg)
+	msg.ParseMode = "HTML"
 	if err == nil {
 		msg.ReplyMarkup = buttons
 	}
