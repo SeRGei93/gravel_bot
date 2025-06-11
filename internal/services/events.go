@@ -310,20 +310,26 @@ func SendNotify(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Databa
 			return
 		}
 
-		SendBroadcast(bot, cfg.AdminUsers, text)
+		users, err := db.User.GetAllUsers()
+		if err != nil {
+			slog.Error("ошибка получения списка пользователей: " + err.Error())
+			return
+		}
+
+		SendBroadcast(bot, users, text)
 	}
 }
 
-func SendBroadcast(bot *tgbotapi.BotAPI, users []int64, text string) {
+func SendBroadcast(bot *tgbotapi.BotAPI, users []table.User, text string) {
 	for _, user := range users {
-		msg := tgbotapi.NewMessage(user, text)
+		msg := tgbotapi.NewMessage(user.ID, text)
 		msg.ParseMode = "HTML"
 
 		_, err := bot.Send(msg)
 		if err != nil {
-			slog.Warn("ошибка отправки", "user_id", user, "error", err)
+			slog.Warn("ошибка отправки", "user_id", user.ID, "error", err)
 		}
-		// опционально: пауза, чтобы не попасть под rate limit
-		time.Sleep(50 * time.Millisecond)
+		// пауза, чтобы не попасть под rate limit
+		time.Sleep(100 * time.Millisecond)
 	}
 }
