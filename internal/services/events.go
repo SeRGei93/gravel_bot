@@ -7,6 +7,7 @@ import (
 	"gravel_bot/internal/database/table"
 	"log/slog"
 	"os"
+	"strings"
 	"time"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
@@ -296,8 +297,33 @@ func ExportCsv(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Databas
 }
 
 func SendNotify(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Database, cfg config.Bot) {
-	msg := tgbotapi.NewMessage(update.Message.Chat.ID, "команда в разработке")
-	if _, err := bot.Send(msg); err != nil {
-		slog.Error(err.Error())
+	// msg := tgbotapi.NewMessage(update.Message.Chat.ID, "команда в разработке")
+	// if _, err := bot.Send(msg); err != nil {
+	// 	slog.Error(err.Error())
+	// }
+
+	if update.Message.IsCommand() && update.Message.Command() == "send_notify" {
+		text := strings.TrimSpace(update.Message.CommandArguments())
+
+		if text == "" {
+			bot.Send(tgbotapi.NewMessage(update.Message.Chat.ID, "Укажи текст сообщения после команды."))
+			return
+		}
+
+		SendBroadcast(bot, cfg.AdminUsers, text)
+	}
+}
+
+func SendBroadcast(bot *tgbotapi.BotAPI, users []int64, text string) {
+	for _, user := range users {
+		msg := tgbotapi.NewMessage(user, text)
+		msg.ParseMode = "HTML"
+
+		_, err := bot.Send(msg)
+		if err != nil {
+			slog.Warn("ошибка отправки", "user_id", user, "error", err)
+		}
+		// опционально: пауза, чтобы не попасть под rate limit
+		time.Sleep(50 * time.Millisecond)
 	}
 }
