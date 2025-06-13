@@ -41,7 +41,7 @@ func Rules(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Database, c
 <b>10. Риски и ответственность 🤌</b>: ты участвуешь на свой страх и риск. Организаторы ответственности не несут. Участвуя — ты подтверждаешь согласие со всеми условиями.`
 
 	msg := tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, text)
-	buttons, err := addButtons(update.CallbackQuery.Message, "kamni200", db, cfg)
+	buttons, err := addButtons(update.CallbackQuery.From.ID, "kamni200", db, cfg)
 	if err == nil {
 		msg.ReplyMarkup = buttons
 	}
@@ -60,7 +60,7 @@ func SetBike(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Database,
 	event, err := db.Event.FindEventByName("kamni200")
 	if err != nil {
 		msg := tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, "Ошибка: событие не найдено")
-		buttons, err := addButtons(update.CallbackQuery.Message, "kamni200", db, cfg)
+		buttons, err := addButtons(update.CallbackQuery.From.ID, "kamni200", db, cfg)
 		if err == nil {
 			msg.ReplyMarkup = buttons
 		}
@@ -71,7 +71,7 @@ func SetBike(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Database,
 	application, _ := db.UserEvent.FindUserToEvent(userID, event.ID)
 	if application != nil {
 		msg := tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, "Вы уже зарегистрированы")
-		buttons, err := addButtons(update.CallbackQuery.Message, "kamni200", db, cfg)
+		buttons, err := addButtons(update.CallbackQuery.From.ID, "kamni200", db, cfg)
 		if err == nil {
 			msg.ReplyMarkup = buttons
 		}
@@ -112,7 +112,7 @@ func Kamni200(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Database
 	event, err := db.Event.FindEventByName("kamni200")
 	if err != nil {
 		msg := tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, "Ошибка: событие не найдено")
-		buttons, err := addButtons(update.CallbackQuery.Message, "kamni200", db, cfg)
+		buttons, err := addButtons(update.CallbackQuery.From.ID, "kamni200", db, cfg)
 		if err == nil {
 			msg.ReplyMarkup = buttons
 		}
@@ -123,7 +123,7 @@ func Kamni200(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Database
 	application, _ := db.UserEvent.FindUserToEvent(userID, event.ID)
 	if application != nil {
 		msg := tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, "Вы уже зарегистрированы")
-		buttons, err := addButtons(update.CallbackQuery.Message, "kamni200", db, cfg)
+		buttons, err := addButtons(update.CallbackQuery.From.ID, "kamni200", db, cfg)
 		if err == nil {
 			msg.ReplyMarkup = buttons
 		}
@@ -135,7 +135,7 @@ func Kamni200(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Database
 	err = db.UserEvent.RegisterUserToEvent(userID, event.ID, true, bike)
 	if err != nil {
 		msg := tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, "Вы уже зарегистрированы")
-		buttons, err := addButtons(update.CallbackQuery.Message, "kamni200", db, cfg)
+		buttons, err := addButtons(update.CallbackQuery.From.ID, "kamni200", db, cfg)
 		if err == nil {
 			msg.ReplyMarkup = buttons
 		}
@@ -152,7 +152,7 @@ func Kamni200(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Database
 Если передумали участвовать — просто дайте знать, это ок.
 `
 	msg := tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, text)
-	buttons, err := addButtons(update.CallbackQuery.Message, "kamni200", db, cfg)
+	buttons, err := addButtons(update.CallbackQuery.From.ID, "kamni200", db, cfg)
 	msg.ParseMode = "HTML"
 	if err == nil {
 		msg.ReplyMarkup = buttons
@@ -180,7 +180,7 @@ func Kamni200Off(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Datab
 	if err != nil {
 		slog.Error(err.Error())
 		msg := tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, "Пользователь не найден")
-		buttons, err := addButtons(update.CallbackQuery.Message, "kamni200", db, cfg)
+		buttons, err := addButtons(update.CallbackQuery.From.ID, "kamni200", db, cfg)
 		if err == nil {
 			msg.ReplyMarkup = buttons
 		}
@@ -192,7 +192,7 @@ func Kamni200Off(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Datab
 	event, err := db.Event.FindEventByName("kamni200")
 	if err != nil {
 		msg := tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, "Ошибка: событие не найдено")
-		buttons, err := addButtons(update.CallbackQuery.Message, "kamni200", db, cfg)
+		buttons, err := addButtons(update.CallbackQuery.From.ID, "kamni200", db, cfg)
 		if err == nil {
 			msg.ReplyMarkup = buttons
 		}
@@ -203,7 +203,7 @@ func Kamni200Off(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Datab
 	err = db.UserEvent.UnRegisterUserToEvent(userID, event.ID)
 	if err != nil {
 		msg := tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, "Заявка не найдена")
-		buttons, err := addButtons(update.CallbackQuery.Message, "kamni200", db, cfg)
+		buttons, err := addButtons(update.CallbackQuery.From.ID, "kamni200", db, cfg)
 		if err == nil {
 			msg.ReplyMarkup = buttons
 		}
@@ -214,7 +214,7 @@ func Kamni200Off(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Datab
 	// Успешное сообщение
 	text := "Заявка отменена"
 	msg := tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, text)
-	buttons, err := addButtons(update.CallbackQuery.Message, "kamni200", db, cfg)
+	buttons, err := addButtons(update.CallbackQuery.From.ID, "kamni200", db, cfg)
 	if err == nil {
 		msg.ReplyMarkup = buttons
 	}
@@ -223,10 +223,7 @@ func Kamni200Off(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Datab
 	}
 }
 
-func addButtons(message *tgbotapi.Message, eventName string, db database.Database, cfg config.Bot) (*tgbotapi.InlineKeyboardMarkup, error) {
-	from := message.Chat
-	userID := from.ID
-
+func addButtons(userID int64, eventName string, db database.Database, cfg config.Bot) (*tgbotapi.InlineKeyboardMarkup, error) {
 	event, err := db.Event.FindEventByName(eventName)
 	if err != nil {
 		return nil, err
@@ -331,16 +328,20 @@ func SendNotify(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Databa
 			return
 		}
 
-		SendBroadcast(bot, users, text)
+		SendBroadcast(bot, users, text, db, cfg)
 	}
 }
 
-func SendBroadcast(bot *tgbotapi.BotAPI, users []table.User, text string) {
+func SendBroadcast(bot *tgbotapi.BotAPI, users []table.User, text string, db database.Database, cfg config.Bot) {
 	for _, user := range users {
 		msg := tgbotapi.NewMessage(user.ID, text)
+		buttons, err := addButtons(user.ID, "kamni200", db, cfg)
+		if err == nil {
+			msg.ReplyMarkup = buttons
+		}
 		msg.ParseMode = "HTML"
 
-		_, err := bot.Send(msg)
+		_, err = bot.Send(msg)
 		if err != nil {
 			slog.Warn("ошибка отправки", "user_id", user.ID, "error", err)
 		}

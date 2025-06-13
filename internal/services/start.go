@@ -28,7 +28,7 @@ func Start(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Database, c
 	`
 
 	msg := tgbotapi.NewMessage(update.Message.Chat.ID, text)
-	buttons, err := addButtons(update.Message, "kamni200", db, cfg)
+	buttons, err := addButtons(update.Message.From.ID, "kamni200", db, cfg)
 	if err == nil {
 		msg.ReplyMarkup = buttons
 	}
