@@ -1,16 +1,16 @@
 package services
 
 import (
+	"gravel_bot/internal/await"
 	"gravel_bot/internal/config"
 	"gravel_bot/internal/database"
-	"gravel_bot/internal/utils"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
 func AddGift(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Database, cfg config.Bot) {
 	// пометить пользователя как ожидающего ввода
-	utils.SetAwaiting(update.CallbackQuery.From.ID, 600)
+	await.SetAwaiting(update.CallbackQuery.From.ID, 600, await.AwaitGift)
 
 	msg := tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, `
 	✏️ Укажите номинацию и опишите приз.

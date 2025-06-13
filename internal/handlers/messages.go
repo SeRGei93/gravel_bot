@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"gravel_bot/internal/await"
 	"gravel_bot/internal/config"
 	"gravel_bot/internal/database"
 	"gravel_bot/internal/services"
@@ -9,5 +10,17 @@ import (
 )
 
 func Messages(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Database, cfg config.Bot) {
-	services.SaveGift(bot, update, db, cfg)
+
+	awaiting, exist := await.GetAwaiting(update.Message.From.ID)
+	if !exist {
+		return
+	}
+
+	switch awaiting.Type {
+	case await.AwaitGift:
+		services.SaveGift(bot, update, db, cfg)
+	case await.AwaitResult:
+		services.SaveResult(bot, update, db, cfg)
+	}
+
 }

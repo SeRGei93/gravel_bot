@@ -21,6 +21,8 @@ func Callbacks(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Databas
 		services.Kamni200Off(bot, update, db, cfg)
 	case "add_gift":
 		services.AddGift(bot, update, db, cfg)
+	case "add_result":
+		services.AddResult(bot, update, db, cfg)
 	default:
 		_, bike := utils.GetKeyValue(update.CallbackQuery.Data)
 		services.Kamni200(bot, update, db, cfg, bike)

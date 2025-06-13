@@ -2,10 +2,10 @@ package services
 
 import (
 	"fmt"
+	"gravel_bot/internal/await"
 	"gravel_bot/internal/config"
 	"gravel_bot/internal/database"
 	"gravel_bot/internal/database/table"
-	"gravel_bot/internal/utils"
 	"log/slog"
 	"time"
 
@@ -17,8 +17,9 @@ func SaveGift(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Database
 		userID := update.Message.From.ID
 		hasMediaGroup := false
 
-		if utils.IsAwaiting(userID) {
-			utils.SetAwaiting(userID, 3) // меняем время ожидания, мы уже дождались ответ
+		awaiting, exist := await.GetAwaiting(userID)
+		if exist {
+			awaiting.Time = time.Now().Add(time.Duration(3) * time.Second) // меняем время ожидания, мы уже дождались ответ
 			event, err := db.Event.FindEventByName("kamni200")
 			if err != nil {
 				slog.Error("ошибка поиска события: " + err.Error())
@@ -87,7 +88,7 @@ func SaveGift(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Database
 			}
 
 			if !hasMediaGroup {
-				utils.DeleteAwaiting(userID) // очистить
+				await.DeleteAwaiting(userID) // очистить
 			}
 
 			msg := tgbotapi.NewMessage(update.Message.Chat.ID, "✅ Спасибо, Ваше сообщение отправлено.")

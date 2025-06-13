@@ -24,6 +24,11 @@ func (r *UserEventRepository) Init() *UserEventRepository {
 	return r
 }
 
+func (r *UserEventRepository) UpdateUserEvent(userEvent *table.UserEvent) error {
+	err := r.database.Save(&userEvent).Error
+	return err
+}
+
 // Зарегистрировать пользователя на событие
 func (r *UserEventRepository) RegisterUserToEvent(userID int64, eventID uint, active bool, bike string) error {
 	_, err := r.FindUserToEvent(userID, eventID)
