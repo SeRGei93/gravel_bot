@@ -10,7 +10,7 @@ import (
 
 func AddGift(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Database, cfg config.Bot) {
 	// пометить пользователя как ожидающего ввода
-	await.SetAwaiting(update.CallbackQuery.From.ID, 600, await.AwaitGift)
+	await.SetAwaiting(update.CallbackQuery.From.ID, 1800, await.AwaitGift)
 
 	msg := tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, `
 	✏️ Укажите номинацию и опишите приз.
