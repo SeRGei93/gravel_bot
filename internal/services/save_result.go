@@ -99,10 +99,13 @@ func validateResultLink(link string) ValidationResult {
 	link = strings.TrimSpace(strings.ToLower(link))
 
 	stravaRe := regexp.MustCompile(`^https?://(www\.)?strava\.com/activities/\d+$`)
+	stravaAppRe := regexp.MustCompile(`^https?://(www\.)?strava\.app\.link/[A-Za-z0-9]+$`)
 	komootRe := regexp.MustCompile(`^https?://(www\.)?komoot\.com/tour/\d+$`)
 
 	switch {
 	case stravaRe.MatchString(link):
+		return ValidationResult{Valid: true, Platform: Strava}
+	case stravaAppRe.MatchString(link):
 		return ValidationResult{Valid: true, Platform: Strava}
 	case komootRe.MatchString(link):
 		return ValidationResult{Valid: true, Platform: Komoot}
