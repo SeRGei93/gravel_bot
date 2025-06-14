@@ -53,7 +53,14 @@ func SaveResult(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Databa
 		return
 	}
 
-	msg := tgbotapi.NewMessage(chatID, `Результат принят. Спасибо за участие 🫶`)
+	text := "Результат принят. Спасибо за участие 🫶"
+	if validateResult.Platform == Strava {
+		text += `
+
+Не забудьте убирать ограничения приватности по стартовой и финишной точке в strava`
+	}
+
+	msg := tgbotapi.NewMessage(chatID, text)
 	msg.ParseMode = "HTML"
 	buttons, err := addButtons(update.Message.From.ID, "kamni200", db, cfg)
 	if err == nil {
@@ -70,13 +77,21 @@ func SaveResult(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Databa
 	bot.Send(fwd)
 }
 
+type Platform string
+
+const (
+	Strava Platform = "strava"
+	Komoot Platform = "komoot"
+	None   Platform = ""
+)
+
 type ValidationResult struct {
 	Valid    bool
-	Platform string
+	Platform Platform
 }
 
 type ResultExample struct {
-	Platform   string
+	Platform   Platform
 	ExampleURL string
 }
 
@@ -88,43 +103,43 @@ func validateResultLink(link string) ValidationResult {
 
 	switch {
 	case stravaRe.MatchString(link):
-		return ValidationResult{Valid: true, Platform: "strava"}
+		return ValidationResult{Valid: true, Platform: Strava}
 	case komootRe.MatchString(link):
-		return ValidationResult{Valid: true, Platform: "komoot"}
+		return ValidationResult{Valid: true, Platform: Komoot}
 	case strings.Contains(link, "strava.com"):
 		return ValidationResult{
 			Valid:    false,
-			Platform: "strava",
+			Platform: Strava,
 		}
 	case strings.Contains(link, "komoot.com"):
 		return ValidationResult{
 			Valid:    false,
-			Platform: "komoot",
+			Platform: Komoot,
 		}
 	default:
 		return ValidationResult{
 			Valid:    false,
-			Platform: "",
+			Platform: None,
 		}
 	}
 }
 
-func buildInvalidURLMessage(platform string) string {
+func buildInvalidURLMessage(platform Platform) string {
 	examples := []ResultExample{
-		{Platform: "strava", ExampleURL: "https://www.strava.com/activities/14758223172"},
-		{Platform: "komoot", ExampleURL: "https://www.komoot.com/tour/2308024419"},
+		{Platform: Strava, ExampleURL: "https://www.strava.com/activities/14758223172"},
+		{Platform: Komoot, ExampleURL: "https://www.komoot.com/tour/2308024419"},
 	}
 
 	caser := cases.Title(language.Und)
 
 	text := "Ссылка не распознана.\n\nДопустимы только ссылки с платформ:\n"
 	for _, result := range examples {
-		text += fmt.Sprintf("- %s\n", caser.String(result.Platform))
+		text += fmt.Sprintf("- %s\n", caser.String(string(result.Platform)))
 	}
 
 	for _, result := range examples {
 		if result.Platform == platform {
-			text += fmt.Sprintf("\nПример для %s: <code>%s</code>", caser.String(result.Platform), result.ExampleURL)
+			text += fmt.Sprintf("\nПример для %s: <code>%s</code>", caser.String(string(result.Platform)), result.ExampleURL)
 			return text
 		}
 	}
