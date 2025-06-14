@@ -230,7 +230,6 @@ func addButtons(userID int64, eventName string, db database.Database, cfg config
 	}
 
 	var applicationBtn []tgbotapi.InlineKeyboardButton
-	var resultBtn []tgbotapi.InlineKeyboardButton
 
 	application, _ := db.UserEvent.FindUserToEvent(userID, event.ID)
 	if application == nil {
@@ -247,12 +246,11 @@ func addButtons(userID int64, eventName string, db database.Database, cfg config
 			return &result, nil
 		}
 
-		resultBtn = append(resultBtn, tgbotapi.NewInlineKeyboardButtonData("🏁 Я уже проехал", "add_result"))
 		applicationBtn = append(applicationBtn, tgbotapi.NewInlineKeyboardButtonData("😢 Отказаться от участия", "kamni200_off"))
 	}
 
 	result := tgbotapi.NewInlineKeyboardMarkup(
-		tgbotapi.NewInlineKeyboardRow(resultBtn...),
+		tgbotapi.NewInlineKeyboardRow(tgbotapi.NewInlineKeyboardButtonData("🏁 Я уже проехал", "add_result")),
 		tgbotapi.NewInlineKeyboardRow(applicationBtn...),
 		tgbotapi.NewInlineKeyboardRow(tgbotapi.NewInlineKeyboardButtonData("➕🎁 Добавить приз", "add_gift")),
 		tgbotapi.NewInlineKeyboardRow(tgbotapi.NewInlineKeyboardButtonData("‼️ Условия участия", "rules")),
