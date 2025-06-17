@@ -240,7 +240,7 @@ func addButtons(userID int64, eventName string, db database.Database, cfg config
 				tgbotapi.NewInlineKeyboardRow(tgbotapi.NewInlineKeyboardButtonData("🏁 Я улучшил свой результат", "add_result")),
 				tgbotapi.NewInlineKeyboardRow(tgbotapi.NewInlineKeyboardButtonData("➕🎁 Добавить приз", "add_gift")),
 				tgbotapi.NewInlineKeyboardRow(tgbotapi.NewInlineKeyboardButtonURL("🚴‍♀️ Чат участников", "http://t.me/kamnigravel")),
-				tgbotapi.NewInlineKeyboardRow(tgbotapi.NewInlineKeyboardButtonURL("🏆 Призовой фонд", "https://t.me/kamnigravel/7698")),
+				tgbotapi.NewInlineKeyboardRow(tgbotapi.NewInlineKeyboardButtonURL("🏆 Призовой фонд", "https://docs.google.com/spreadsheets/d/1DOUmsHI1Q0Az2jo2KGtrSXUWUV18rz-BlkNRI1Pv_mQ/edit?gid=0#gid=0")),
 			)
 
 			return &result, nil
@@ -253,7 +253,7 @@ func addButtons(userID int64, eventName string, db database.Database, cfg config
 	rows = append(rows, tgbotapi.NewInlineKeyboardRow(tgbotapi.NewInlineKeyboardButtonData("➕🎁 Добавить приз", "add_gift")))
 	rows = append(rows, tgbotapi.NewInlineKeyboardRow(tgbotapi.NewInlineKeyboardButtonData("‼️ Условия участия", "rules")))
 	rows = append(rows, tgbotapi.NewInlineKeyboardRow(tgbotapi.NewInlineKeyboardButtonURL("🚴‍♀️ Чат участников", "http://t.me/kamnigravel")))
-	rows = append(rows, tgbotapi.NewInlineKeyboardRow(tgbotapi.NewInlineKeyboardButtonURL("🏆 Призовой фонд", "https://t.me/kamnigravel/7698")))
+	rows = append(rows, tgbotapi.NewInlineKeyboardRow(tgbotapi.NewInlineKeyboardButtonURL("🏆 Призовой фонд", "https://docs.google.com/spreadsheets/d/1DOUmsHI1Q0Az2jo2KGtrSXUWUV18rz-BlkNRI1Pv_mQ/edit?gid=0#gid=0")))
 	result := tgbotapi.NewInlineKeyboardMarkup(rows...)
 
 	return &result, nil

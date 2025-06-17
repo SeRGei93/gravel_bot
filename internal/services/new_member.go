@@ -18,7 +18,7 @@ func NewMember(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Databas
 			msg := tgbotapi.NewMessage(update.Message.Chat.ID, fmt.Sprintf("👋 Привет, %s! Добро пожаловать в КАМНИ 200 🚴‍♂️", newUser.FirstName))
 			msg.ReplyMarkup = tgbotapi.NewInlineKeyboardMarkup(
 				tgbotapi.NewInlineKeyboardRow(tgbotapi.NewInlineKeyboardButtonURL("✅ Принять участие", "https://t.me/kamnigravelride_bot")),
-				tgbotapi.NewInlineKeyboardRow(tgbotapi.NewInlineKeyboardButtonURL("🏆 Призовой фонд", "https://t.me/kamnigravel/7698")),
+				tgbotapi.NewInlineKeyboardRow(tgbotapi.NewInlineKeyboardButtonURL("🏆 Призовой фонд", "https://docs.google.com/spreadsheets/d/1DOUmsHI1Q0Az2jo2KGtrSXUWUV18rz-BlkNRI1Pv_mQ/edit?gid=0#gid=0")),
 				tgbotapi.NewInlineKeyboardRow(tgbotapi.NewInlineKeyboardButtonURL("‼️ Условия участия", "https://t.me/kamnigravel/7697")),
 			)
 
