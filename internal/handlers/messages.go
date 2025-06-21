@@ -13,6 +13,7 @@ func Messages(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Database
 
 	awaiting, exist := await.GetAwaiting(update.Message.From.ID)
 	if !exist {
+		services.NoHandler(bot, update, db, cfg)
 		return
 	}
 
@@ -21,7 +22,5 @@ func Messages(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Database
 		services.SaveGift(bot, update, db, cfg)
 	case await.AwaitResult:
 		services.SaveResult(bot, update, db, cfg)
-	default:
-		services.NoHandler(bot, update, db, cfg)
 	}
 }
