@@ -8,11 +8,11 @@ import (
 )
 
 func NoHandler(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Database, cfg config.Bot) {
-	if update.Message == nil {
+	chatID := update.Message.Chat.ID
+	fromId := update.Message.From.ID
+	if update.Message == nil || chatID != fromId {
 		return
 	}
-
-	chatID := update.Message.Chat.ID
 
 	msgText := `<b>Бот не ведёт диалог сообщениями.</b>
 Все действия выполняются через кнопки.
