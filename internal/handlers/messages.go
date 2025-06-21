@@ -21,6 +21,7 @@ func Messages(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Database
 		services.SaveGift(bot, update, db, cfg)
 	case await.AwaitResult:
 		services.SaveResult(bot, update, db, cfg)
+	default:
+		services.NoHandler(bot, update, db, cfg)
 	}
-
 }

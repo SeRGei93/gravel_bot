@@ -331,13 +331,13 @@ func SendNotify(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Databa
 func SendBroadcast(bot *tgbotapi.BotAPI, users []table.User, text string, db database.Database, cfg config.Bot) {
 	for _, user := range users {
 		msg := tgbotapi.NewMessage(user.ID, text)
-		buttons, err := addButtons(user.ID, "kamni200", db, cfg)
-		if err == nil {
-			msg.ReplyMarkup = buttons
-		}
+		// buttons, err := addButtons(user.ID, "kamni200", db, cfg)
+		// if err == nil {
+		// 	msg.ReplyMarkup = buttons
+		// }
 		msg.ParseMode = "HTML"
 
-		_, err = bot.Send(msg)
+		_, err := bot.Send(msg)
 		if err != nil {
 			slog.Warn("ошибка отправки", "user_id", user.ID, "error", err)
 		}
