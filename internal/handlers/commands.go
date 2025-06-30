@@ -20,5 +20,7 @@ func Commands(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Database
 		services.SendNotify(bot, update, db, cfg)
 	case "info":
 		services.Info(bot, update, db, cfg)
+	case "public_info":
+		services.PublicInfo(bot, update, db, cfg)
 	}
 }
