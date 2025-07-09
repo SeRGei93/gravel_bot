@@ -20,7 +20,8 @@ func SetLocalCommands(bot *tgbotapi.BotAPI, cfg config.Bot) error {
 	adminCommands := []tgbotapi.BotCommand{
 		{Command: "export_csv", Description: "Список участников"},
 		{Command: "export_gifts", Description: "Список подарков"},
-		{Command: "send_notify", Description: "Отправить сообщение всем участникам"},
+		{Command: "send_notify", Description: "Отправить сообщение всем"},
+		{Command: "send_notify_participants", Description: "Отправить сообщение всем участникам"},
 	}
 
 	err := sendCommandRequest(bot, cfg.AdminChat, adminCommands)

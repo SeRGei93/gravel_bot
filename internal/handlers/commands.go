@@ -17,7 +17,9 @@ func Commands(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Database
 	case "export_gifts":
 		services.ExportGifts(bot, update, db, cfg)
 	case "send_notify":
-		services.SendNotify(bot, update, db, cfg)
+		//services.SendNotify(bot, update, db, cfg)
+	case "send_notify_participants":
+		services.SendNotifyParticipants(bot, update, db, cfg)
 	case "info":
 		services.Info(bot, update, db, cfg)
 	case "public_info":

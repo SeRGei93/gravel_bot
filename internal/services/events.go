@@ -327,6 +327,35 @@ func SendNotify(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Databa
 		SendBroadcast(bot, users, text, db, cfg)
 	}
 }
+func SendNotifyParticipants(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Database, cfg config.Bot) {
+	// msg := tgbotapi.NewMessage(update.Message.Chat.ID, "команда в разработке")
+	// if _, err := bot.Send(msg); err != nil {
+	// 	slog.Error(err.Error())
+	// }
+
+	event, err := db.Event.FindEventByName("kamni200")
+	if err != nil {
+		slog.Error("ошибка : " + err.Error())
+		return
+	}
+
+	if update.Message.IsCommand() && update.Message.Command() == "send_notify_participants" {
+		text := strings.TrimSpace(update.Message.CommandArguments())
+
+		if text == "" {
+			bot.Send(tgbotapi.NewMessage(update.Message.Chat.ID, "Укажи текст сообщения после команды."))
+			return
+		}
+
+		_, err := db.User.GetAllParticipants(event.ID)
+		if err != nil {
+			slog.Error("ошибка получения списка пользователей: " + err.Error())
+			return
+		}
+
+		//SendBroadcast(bot, users, text, db, cfg)
+	}
+}
 
 func SendBroadcast(bot *tgbotapi.BotAPI, users []table.User, text string, db database.Database, cfg config.Bot) {
 	for _, user := range users {
