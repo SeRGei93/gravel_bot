@@ -21,6 +21,7 @@ func PublicInfo(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Databa
 				tgbotapi.NewInlineKeyboardRow(tgbotapi.NewInlineKeyboardButtonURL("‼️ Условия участия", "https://t.me/kamnigravel/7697")),
 			)*/
 
+		msg.ParseMode = "HTML"
 		bot.Send(msg)
 	}
 }
