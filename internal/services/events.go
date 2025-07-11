@@ -224,34 +224,36 @@ func Kamni200Off(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Datab
 }
 
 func addButtons(userID int64, eventName string, db database.Database, cfg config.Bot) (*tgbotapi.InlineKeyboardMarkup, error) {
-	event, err := db.Event.FindEventByName(eventName)
-	if err != nil {
-		return nil, err
-	}
-
 	var rows [][]tgbotapi.InlineKeyboardButton
 
-	application, _ := db.UserEvent.FindUserToEvent(userID, event.ID)
-	if application == nil {
-		rows = append(rows, tgbotapi.NewInlineKeyboardRow(tgbotapi.NewInlineKeyboardButtonData("✅ Принять участие", "kamni200")))
-	} else {
-		if application.ResultLink.Valid {
-			result := tgbotapi.NewInlineKeyboardMarkup(
-				tgbotapi.NewInlineKeyboardRow(tgbotapi.NewInlineKeyboardButtonData("🏁 Я улучшил свой результат", "add_result")),
-				tgbotapi.NewInlineKeyboardRow(tgbotapi.NewInlineKeyboardButtonData("➕🎁 Добавить приз", "add_gift")),
-				tgbotapi.NewInlineKeyboardRow(tgbotapi.NewInlineKeyboardButtonURL("🚴‍♀️ Чат участников", "http://t.me/kamnigravel")),
-				tgbotapi.NewInlineKeyboardRow(tgbotapi.NewInlineKeyboardButtonURL("🏆 Призовой фонд", "https://docs.google.com/spreadsheets/d/1DOUmsHI1Q0Az2jo2KGtrSXUWUV18rz-BlkNRI1Pv_mQ/edit?gid=0#gid=0")),
-			)
-
-			return &result, nil
+	/*
+		event, err := db.Event.FindEventByName(eventName)
+		if err != nil {
+			return nil, err
 		}
 
-		rows = append(rows, tgbotapi.NewInlineKeyboardRow(tgbotapi.NewInlineKeyboardButtonData("🏁 Я уже проехал", "add_result")))
-		rows = append(rows, tgbotapi.NewInlineKeyboardRow(tgbotapi.NewInlineKeyboardButtonData("😢 Отказаться от участия", "kamni200_off")))
-	}
+		application, _ := db.UserEvent.FindUserToEvent(userID, event.ID)
+		if application == nil {
+			rows = append(rows, tgbotapi.NewInlineKeyboardRow(tgbotapi.NewInlineKeyboardButtonData("✅ Принять участие", "kamni200")))
+		} else {
+			if application.ResultLink.Valid {
+				result := tgbotapi.NewInlineKeyboardMarkup(
+					tgbotapi.NewInlineKeyboardRow(tgbotapi.NewInlineKeyboardButtonData("🏁 Я улучшил свой результат", "add_result")),
+					tgbotapi.NewInlineKeyboardRow(tgbotapi.NewInlineKeyboardButtonData("➕🎁 Добавить приз", "add_gift")),
+					tgbotapi.NewInlineKeyboardRow(tgbotapi.NewInlineKeyboardButtonURL("🚴‍♀️ Чат участников", "http://t.me/kamnigravel")),
+					tgbotapi.NewInlineKeyboardRow(tgbotapi.NewInlineKeyboardButtonURL("🏆 Призовой фонд", "https://docs.google.com/spreadsheets/d/1DOUmsHI1Q0Az2jo2KGtrSXUWUV18rz-BlkNRI1Pv_mQ/edit?gid=0#gid=0")),
+				)
 
-	rows = append(rows, tgbotapi.NewInlineKeyboardRow(tgbotapi.NewInlineKeyboardButtonData("➕🎁 Добавить приз", "add_gift")))
-	rows = append(rows, tgbotapi.NewInlineKeyboardRow(tgbotapi.NewInlineKeyboardButtonData("‼️ Условия участия", "rules")))
+				return &result, nil
+			}
+
+			rows = append(rows, tgbotapi.NewInlineKeyboardRow(tgbotapi.NewInlineKeyboardButtonData("🏁 Я уже проехал", "add_result")))
+			rows = append(rows, tgbotapi.NewInlineKeyboardRow(tgbotapi.NewInlineKeyboardButtonData("😢 Отказаться от участия", "kamni200_off")))
+		}
+
+		rows = append(rows, tgbotapi.NewInlineKeyboardRow(tgbotapi.NewInlineKeyboardButtonData("➕🎁 Добавить приз", "add_gift")))
+		rows = append(rows, tgbotapi.NewInlineKeyboardRow(tgbotapi.NewInlineKeyboardButtonData("‼️ Условия участия", "rules")))*/
+
 	rows = append(rows, tgbotapi.NewInlineKeyboardRow(tgbotapi.NewInlineKeyboardButtonURL("🚴‍♀️ Чат участников", "http://t.me/kamnigravel")))
 	rows = append(rows, tgbotapi.NewInlineKeyboardRow(tgbotapi.NewInlineKeyboardButtonURL("🏆 Призовой фонд", "https://docs.google.com/spreadsheets/d/1DOUmsHI1Q0Az2jo2KGtrSXUWUV18rz-BlkNRI1Pv_mQ/edit?gid=0#gid=0")))
 	result := tgbotapi.NewInlineKeyboardMarkup(rows...)

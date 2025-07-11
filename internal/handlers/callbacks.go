@@ -10,8 +10,10 @@ import (
 )
 
 func Callbacks(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Database, cfg config.Bot) {
-	cmd := update.CallbackQuery.Data
+	services.Start(bot, update, db, cfg)
+	return
 
+	cmd := update.CallbackQuery.Data
 	switch cmd {
 	case "rules":
 		services.Rules(bot, update, db, cfg)

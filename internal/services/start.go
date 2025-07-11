@@ -17,10 +17,11 @@ func Start(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Database, c
 Мероприятие завершилось!`
 
 	msg := tgbotapi.NewMessage(update.Message.Chat.ID, text)
-	buttons, err := addButtons(update.Message.From.ID, "kamni200", db, cfg)
-	if err == nil {
-		msg.ReplyMarkup = buttons
-	}
+	/*
+		buttons, err := addButtons(update.Message.From.ID, "kamni200", db, cfg)
+		if err == nil {
+			msg.ReplyMarkup = buttons
+		}*/
 	msg.ParseMode = "HTML"
 
 	bot.Send(msg)
