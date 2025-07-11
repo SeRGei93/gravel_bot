@@ -10,7 +10,9 @@ import (
 )
 
 func Callbacks(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Database, cfg config.Bot) {
-	services.Start(bot, update, db, cfg)
+	text := `Мероприятие завершилось!`
+	msg := tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, text)
+	bot.Send(msg)
 	return
 
 	cmd := update.CallbackQuery.Data
