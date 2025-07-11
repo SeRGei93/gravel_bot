@@ -10,10 +10,10 @@ import (
 )
 
 func Messages(bot *tgbotapi.BotAPI, update tgbotapi.Update, db database.Database, cfg config.Bot) {
-
-	awaiting, exist := await.GetAwaiting(update.Message.From.ID)
+	userID := update.Message.From.ID
+	awaiting, exist := await.GetAwaiting(userID)
 	if !exist {
-		services.NoHandler(bot, update, db, cfg)
+		services.Dialog(bot, update, db, cfg)
 		return
 	}
 
